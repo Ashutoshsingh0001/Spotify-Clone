@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="./assests/logo.png" type="image/x-icon">
+    <title>Spotify - Web Player (Live Sync & Jam)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="nav">
+                <div class="nav-option" id="nav-home" style="opacity: 1;">
+                    <i class="fa-solid fa-house"></i>
+                    <a href="#">Home</a>
+                </div>
+                <div class="nav-option" id="nav-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <a href="#">Search</a>
+                </div>
+            </div>
+            <div class="library">
+                <div class="options">
+                    <div class="lib-option nav-option">
+                        <img src="./assests/library_icon.png" alt="Library">
+                        <a href="#">Your Library</a>
+                    </div>
+                    <div class="icons">
+                        <i class="fa-solid fa-plus" id="create-playlist-btn" title="Create Playlist"></i>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Custom / Synced Playlists Container -->
+                <div id="playlist-container" class="playlist-container">
+                    <!-- Loaded dynamically via real-time backend -->
+                </div>
+
+                <div class="lib-box">
+                    <div class="box">
+                        <p class="box-p1">Create your first playlist</p>
+                        <p class="box-p2">It's easy, we'll help you</p>
+                        <button class="badge" id="create-playlist-btn-2">Create playlist</button>
+                    </div>
+                    <div class="box">
+                        <p class="box-p1">Listen Together in Real-Time</p>
+                        <p class="box-p2">Start a Spotify Jam with friends</p>
+                        <button class="badge dark-badge" id="sidebar-jam-btn">Start Jam Session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
+            <!-- STICKY NAV -->
+            <div class="sticky-nav">
+                <div class="sticky-nav-icons">
+                    <img src="./assests/backward_icon.png" alt="Back" title="Back">
+                    <img src="./assests/forward_icon.png" class="hide" alt="Forward" title="Forward">
+                </div>
+
+                <div class="sticky-nav-center">
+                    <!-- Real-Time Server Pulse & Online Counter -->
+                    <div id="live-stats-badge" class="live-stats-badge">
+                        <span class="live-pulse"></span>
+                        <span>Connecting to Real-Time Server...</span>
+                    </div>
+                </div>
+
+                <div class="sticky-nav-options">
+                    <!-- Real-Time Spotify Jam Button -->
+                    <button class="badge jam-badge" id="jam-btn" title="Spotify Jam / Group Listen">
+                        <span id="jam-nav-status"><i class="fa-solid fa-users-viewfinder"></i> Start Jam</span>
+                    </button>
+                    <!-- Friend Activity Toggle -->
+                    <button class="icon-btn nav-item" id="friend-toggle-btn" title="Toggle Live Friend Activity">
+                        <i class="fa-solid fa-user-group"></i>
+                    </button>
+                    <!-- User Profile Badge -->
+                    <div class="nav-item user-profile-wrapper" id="user-profile-badge">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH VIEW (Toggled when Search is clicked) -->
+            <div id="search-view" class="search-view" style="display: none;">
+                <div class="search-header">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="What do you want to play? (Artists, songs, albums...)" autocomplete="off">
+                    </div>
+                </div>
+                <h2>Search Results</h2>
+                <div id="search-results-grid" class="cards-container">
+                    <!-- Search results injected here dynamically -->
+                </div>
+            </div>
+
+            <!-- HOME CONTENT VIEW -->
+            <div id="home-content">
+                <div class="hero-welcome">
+                    <h1>Good afternoon</h1>
+                    <div class="quick-play-grid">
+                        <div class="quick-play-card" onclick="loadAndPlay(0, 0, true)">
+                            <img src="./assests/card1img.jpeg" alt="Top 50 Global">
+                            <span>Top 50 - Global</span>
+                            <div class="quick-play-overlay"><i class="fa-solid fa-play"></i></div>
+                        </div>
+                        <div class="quick-play-card" onclick="loadAndPlay(1, 0, true)">
+                            <img src="./assests/card2img.jpeg" alt="Mahhi Sona">
+                            <span>Mahhi Sona</span>
+                            <div class="quick-play-overlay"><i class="fa-solid fa-play"></i></div>
+                        </div>
+                        <div class="quick-play-card" onclick="loadAndPlay(2, 0, true)">
+                            <img src="./assests/card3img.jpeg" alt="Midnight Chillhop">
+                            <span>Midnight Chillhop</span>
+                            <div class="quick-play-overlay"><i class="fa-solid fa-play"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Recently Played</h2>
+                <div class="cards-container" id="recent-container">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <h2>Trending now near you</h2>
+                <div class="cards-container" id="trending-container">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <h2>Featured charts</h2>
+                <div class="cards-container" id="featured-container">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <div class="footer">
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REAL-TIME FRIEND ACTIVITY DRAWER -->
+        <div id="friend-activity-drawer" class="friend-activity-drawer">
+            <div class="drawer-header">
+                <h3><i class="fa-solid fa-users" style="color:#1db954; margin-right:8px;"></i> Friend Activity</h3>
+                <span class="live-tag">LIVE</span>
+            </div>
+            <p class="drawer-subtitle">See what friends are listening to in real time</p>
+            <div id="friend-list" class="friend-list">
+                <!-- Dynamically populated via WebSockets -->
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM MUSIC PLAYER BAR -->
+    <div class="music-player">
+        <div class="album">
+            <img src="./assests/card2img.jpeg" class="album-img" id="player-album-img" alt="Album Art">
+            <div class="song-info">
+                <p class="song-name" id="player-song-name">Mahhi Sona</p>
+                <p class="artist-name" id="player-artist-name">Darshan Raval</p>
+            </div>
+            <i class="fa-regular fa-heart" id="player-like-btn" title="Save to Your Library"></i>
+            <i class="fa-solid fa-tablet-screen-button" title="Connect to a device"></i>
+        </div>
+
+        <div class="player">
+            <div class="player-controls">
+                <img src="./assests/player_icon1.png" class="player-control-icon" id="shuffle-btn" title="Enable Shuffle">
+                <img src="./assests/player_icon2.png" class="player-control-icon" id="prev-btn" title="Previous Song">
+                <img src="./assests/player_icon3.png" class="player-control-icon play-center-btn" id="play-btn" style="opacity: 1; height: 2.2rem;" title="Play/Pause (Space)">
+                <img src="./assests/player_icon4.png" class="player-control-icon" id="next-btn" title="Next Song">
+                <img src="./assests/player_icon5.png" class="player-control-icon" id="repeat-btn" title="Enable Repeat">
+            </div>
+            <div class="playback-bar">
+                <span class="current-time" id="current-time">0:00</span>
+                <input type="range" min="0" max="100" value="0" class="progress-bar" id="progress-bar" title="Seek">
+                <span class="total-time" id="total-time">1:00</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <i class="fa-solid fa-users-viewfinder" id="jam-bar-btn" title="Spotify Jam Session" onclick="document.getElementById('jam-modal').classList.toggle('open')"></i>
+            <i class="fa-solid fa-bars" title="Queue"></i>
+            <i class="fa-solid fa-volume-high" id="volume-icon" title="Mute/Unmute"></i>
+            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="80" title="Volume">
+        </div>
+    </div>
+
+    <!-- SPOTIFY JAM (LISTEN TOGETHER) MODAL -->
+    <div id="jam-modal" class="jam-modal">
+        <div class="jam-modal-content">
+            <div class="jam-modal-header">
+                <div class="jam-title-box">
+                    <span class="jam-icon"><i class="fa-solid fa-radio"></i></span>
+                    <h2>Spotify Jam Session</h2>
+                </div>
+                <button class="close-btn" id="jam-modal-close">&times;</button>
+            </div>
+
+            <!-- Inactive Section: Start or Join Room -->
+            <div id="jam-inactive-section" class="jam-section">
+                <p class="jam-intro">Listen together in real time! Music playback, track changes, and queue stay 100% in sync for everyone in the room.</p>
+                <div class="jam-actions">
+                    <div class="jam-action-card">
+                        <h3>Host a Jam</h3>
+                        <p>Start a new synchronized listening session and invite your friends with a room code.</p>
+                        <button class="badge green-badge" id="jam-create-btn">
+                            <i class="fa-solid fa-plus"></i> Start Jam Session
+                        </button>
+                    </div>
+                    <div class="jam-action-card">
+                        <h3>Join a Jam</h3>
+                        <p>Enter the 8-character room code from your friend to tune in together instantly.</p>
+                        <div class="join-input-group">
+                            <input type="text" id="jam-join-code-input" placeholder="e.g. JAM-4821" maxlength="10">
+                            <button class="badge" id="jam-join-btn">Join</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Section: Synchronized Session Room -->
+            <div id="jam-active-section" class="jam-section" style="display: none;">
+                <div class="room-banner">
+                    <div class="room-info">
+                        <span class="sync-badge"><span class="live-pulse"></span> IN SYNC</span>
+                        <h3>Room Code: <span id="jam-room-code-display" class="code-text">JAM-0000</span></h3>
+                    </div>
+                    <div class="room-buttons">
+                        <button class="copy-btn" id="jam-copy-btn" title="Copy Room Code">
+                            <i class="fa-regular fa-copy"></i> Copy Code
+                        </button>
+                        <button class="leave-btn" id="jam-leave-btn" title="Leave Session">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Leave
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Listeners -->
+                <div class="jam-members-container">
+                    <h4>Connected Listeners</h4>
+                    <div id="jam-member-list" class="jam-member-list"></div>
+                </div>
+
+                <!-- Floating Reactions Bar -->
+                <div class="reactions-bar">
+                    <span class="react-label">Live Party Reactions:</span>
+                    <button class="reaction-btn" data-emoji="🔥">🔥</button>
+                    <button class="reaction-btn" data-emoji="❤️">❤️</button>
+                    <button class="reaction-btn" data-emoji="🎵">🎵</button>
+                    <button class="reaction-btn" data-emoji="🕺">🕺</button>
+                    <button class="reaction-btn" data-emoji="🎉">🎉</button>
+                    <button class="reaction-btn" data-emoji="✨">✨</button>
+                </div>
+
+                <!-- Real-Time Jam Room Chat -->
+                <div class="jam-chat-container">
+                    <h4>Room Chat</h4>
+                    <div id="jam-chat-messages" class="jam-chat-messages">
+                        <div class="jam-chat-item system-msg">
+                            <span>Welcome to the Jam! Chat and react with everyone in this session.</span>
+                        </div>
+                    </div>
+                    <div class="jam-chat-input-row">
+                        <input type="text" id="jam-chat-input" placeholder="Say something to the room..." maxlength="200">
+                        <button id="jam-chat-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Reactions Animation Layer -->
+    <div id="floating-reactions-container" class="floating-reactions-container"></div>
+
+    <!-- Socket.io & Client Application Script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
